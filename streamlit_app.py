@@ -192,6 +192,7 @@ def combine_into_chart(iv3_data, gf_data, gemeente):
     md = md[md.index.isin(select_list)]
     md.index = md.index.map(brev_dict)
     md = md.reset_index()
+    md = md.sort_values(by='Categorie', key=lambda x: x == 'Gemeentefonds')
     
     chart_help = ', '.join(f'{v}: {k}' for k, v in brev_dict.items())
     
