@@ -24,7 +24,7 @@ def safe_to_numeric(x):
 # Data import
 @st.cache_resource
 def get_iv3data(jaar, doc):
-    filepath = f"Analysedata/Iv3/{jaar}_{doc}.csv"
+    filepath = f"https://raw.githubusercontent.com/michielsd/begrotingsanalysetool/refs/heads/main/Analysedata/Iv3/{jaar}_{doc}.csv"
     data = pd.read_csv(filepath, sep=";")
 
     return data
@@ -49,7 +49,7 @@ def filter_iv3data(data, gemeente):
 
 @st.cache_resource
 def get_gfdata(gf_path):
-    filepath = f"Analysedata/GF/GF_{gf_path}.csv"
+    filepath = f"https://raw.githubusercontent.com/michielsd/begrotingsanalysetool/refs/heads/main/Analysedata/GF/GF_{gf_path}.csv"
     data = pd.read_csv(filepath, sep=";")
     
     return data
