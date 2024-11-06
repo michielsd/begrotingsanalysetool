@@ -258,13 +258,14 @@ with chart_container:
     
         gf_cluster_data = filter_gfdata(get_gfdata(circulaire_dict[selected_circulaire]), selected_gemeente)
         iv3_cluster_data = iv3_to_cluster(filter_iv3data(get_iv3data(selected_jaar, selected_doc), selected_gemeente), overhead_select)
-        chart_data, chart_help, custom_order = combine_into_chart(iv3_cluster_data, gf_cluster_data, selected_gemeente)
+        chart_data, chart_help, cluster_order = combine_into_chart(iv3_cluster_data, gf_cluster_data, selected_gemeente)
+        categorie_order = [selected_gemeente, "Gemeentefonds"]
         
         chart = alt.Chart(chart_data).mark_bar().encode(
-            x=alt.X('Taakveld:N', title='Cluster', sort=custom_order),
+            x=alt.X('Taakveld:N', title='Cluster', sort=cluster_order),
             y=alt.Y('Waarde:Q', title='€ 1 mln.'),
-            color='Categorie:N',
-            xOffset='Categorie:N',
+            color=alt.Color('Categorie:N', sort=categorie_order),
+            xOffset=alt.XOffset('Categorie:N', sort=categorie_order)
         )
         
         st.altair_chart(chart, use_container_width=True)
