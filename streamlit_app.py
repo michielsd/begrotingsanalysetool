@@ -48,6 +48,18 @@ def filter_iv3data(data, gemeente):
     return filtered_data
 
 @st.cache_resource
+def get_class_data(jaar, gemeente):
+    filepath = f"https://raw.githubusercontent.com/michielsd/begrotingsanalysetool/refs/heads/main/Brondata/Gemeenteklassen/{jaar}.csv"
+    
+    gemeente = gemeente.replace(" (gemeente)", "")
+    
+    data = pd.read_csv(filepath, sep="\t")
+    data = data.set_index("Gemeenten")    
+    data = data.loc[gemeente]
+    
+    return data
+
+@st.cache_resource
 def get_gfdata(gf_path):
     filepath = f"https://raw.githubusercontent.com/michielsd/begrotingsanalysetool/refs/heads/main/Analysedata/GF/GF_{gf_path}.csv"
     data = pd.read_csv(filepath, sep=";")
@@ -70,9 +82,6 @@ def filter_gfdata(data, gemeente):
     # Convert all numerical values to numeric and divide by 1,000,000
     filtered_data = filtered_data.apply(safe_to_numeric)
     filtered_data = filtered_data.map(lambda x: x / 1000000 if pd.api.types.is_numeric_dtype(type(x)) else x)
-    
-    filtered_data.loc["Overige eigen middelen", "Gemeentefonds"] *= -1
-    filtered_data.loc["Onroerendezaakbelasting", "Gemeentefonds"] *= -1
     
     return filtered_data
 
@@ -121,24 +130,24 @@ def get_cluster_dict():
         "Mutatie reserves": ("0.10"), # Waarom hier niet 0.11 bij?
     }
     
-    cluster_to_afk = {
-        "Individuele voorzieningen Wmo": "Wmo",
-        "Individuele voorzieningen Jeugd": "Jeugd",
-        "Overige eigen middelen": "OEM",
-        "Onroerendezaakbelasting": "OZB",
-    }
-    
-    return cluster_to_iv3, cluster_to_afk
+    return cluster_to_iv3
     
 
-def iv3_to_cluster(df, overhead):
+def iv3_to_cluster(df, overhead, custom_df=None):
     
-    cluster_dict, cluster_afk = get_cluster_dict()
+    cluster_dict = get_cluster_dict()
+    
+    if custom_df is not None:
+        cdf = custom_df.copy()
+    else:
+        cdf = df.copy()
     
     for cluster, iv3_codes in cluster_dict.items():
         df.loc[cluster] = df.loc[df.index.str.startswith(iv3_codes)].sum()
+        cdf.loc[cluster] = cdf.loc[cdf.index.str.startswith(iv3_codes)].sum()
     
     df = df.loc[df.index.isin(cluster_dict.keys())]
+    cdf = cdf.loc[cdf.index.isin(cluster_dict.keys())]
     
     if overhead:
         overhead_row = df.loc["Overhead"]
@@ -147,29 +156,34 @@ def iv3_to_cluster(df, overhead):
         for index, row in df.iterrows():
             fraction = row["L1.1 Salarissen en sociale lasten"] / total_l1_1
             if index != "Overhead":
-                df.at[index, "Lasten"] += int(overhead_row["Lasten"] * fraction)
+                cdf.at[index, "Lasten"] += int(overhead_row["Lasten"] * fraction)
             else:
-                df.at[index, "Baten"] = 0
-                df.at[index, "Lasten"] = 0
-                df.at["Bestuur en ondersteuning", "Lasten"] += int(overhead_row["Saldo"] * fraction)
+                cdf.at[index, "Baten"] = 0
+                cdf.at[index, "Lasten"] = 0
+                cdf.at["Bestuur en ondersteuning", "Lasten"] += int(overhead_row["Saldo"] * fraction)
         
-        df = df.assign(Saldo=df['Lasten'] - df['Baten'])
+        cdf = cdf.assign(Saldo=cdf['Lasten'] - cdf['Baten'])
     
-    df.loc["Overige eigen middelen", "Saldo"] *= -1
-    df.loc["Onroerendezaakbelasting", "Saldo"] *= -1
+    cdf = cdf[['Saldo']]
     
-    df = df[['Saldo']]
-    
-    return df
+    return cdf
 
 def combine_into_chart(iv3_data, gf_data, gemeente):
     # Prep for concat
-    iv3_data = iv3_data.rename(columns={"Saldo": "Waarde"})
-    iv3_data["Categorie"] = gemeente
-    gf_data = gf_data.rename(columns={"Gemeentefonds": "Waarde"})
-    gf_data["Categorie"] = "Gemeentefonds"
+    iv3 = iv3_data.copy()
+    gf = gf_data.copy()
     
-    md = pd.concat([iv3_data, gf_data])
+    iv3.loc["Overige eigen middelen", "Saldo"] *= -1
+    iv3.loc["Onroerendezaakbelasting", "Saldo"] *= -1
+    iv3 = iv3_data.rename(columns={"Saldo": "Waarde"})
+    iv3["Categorie"] = gemeente
+    
+    gf.loc["Overige eigen middelen", "Gemeentefonds"] *= -1
+    gf.loc["Onroerendezaakbelasting", "Gemeentefonds"] *= -1
+    gf = gf_data.rename(columns={"Gemeentefonds": "Waarde"})
+    gf["Categorie"] = "Gemeentefonds"
+    
+    md = pd.concat([iv3, gf])
         
     brev_dict = {
         "Onroerendezaakbelasting": "OZB",
@@ -194,10 +208,35 @@ def combine_into_chart(iv3_data, gf_data, gemeente):
     md = md.reset_index()
     md = md.sort_values(by='Categorie', key=lambda x: x == 'Gemeentefonds')
     
-    chart_help = ', '.join(f'{v}: {k}' for k, v in brev_dict.items())
+    chart_help = '_' + ', '.join(f'{v}: {k}' for k, v in brev_dict.items()) + '_'
     
     return md, chart_help, custom_order
 
+def create_table(iv3_data, gf_data, jaar, gemeente):
+    i = iv3_data.copy()
+    g = gf_data.copy()
+    
+    i = i.rename(columns={"Saldo": "Netto lasten"})
+    
+    g.loc["Gemeentefonds"] = gf_data.sum()
+    g.loc["Onroerendezaakbelasting", "Gemeentefonds"] *= -1
+    g.loc["Overige eigen middelen", "Gemeentefonds"] *= -1
+    
+    md = pd.merge(i, g, on='Taakveld', how='outer')
+    
+    inkomsten = md.loc[['Onroerendezaakbelasting', 'Overige eigen middelen', 'Mutatie reserves', 'Gemeentefonds']]
+    inkomsten['Netto lasten'] *= -1000
+    inkomsten['Gemeentefonds'] *= -1000
+    
+    inkomsten['Verschil'] = inkomsten['Netto lasten'] + inkomsten['Gemeentefonds']
+    
+    inwoners = get_class_data(jaar, gemeente)['Inwonertal']
+    inkomsten['Verschil per inwoner'] = 1000 * inkomsten['Verschil'] / inwoners 
+    
+    st.write(inkomsten)
+    
+    
+    
 
 ############################################################################
 
@@ -230,8 +269,15 @@ with st.sidebar:
     selected_doc = st.selectbox("Begroting- of jaarrekeningdata?",
                             documenten,
                             key=2)
-
-
+    
+    if "jaar" in st.session_state and "gemeente" in st.session_state and "tabel" in st.session_state:
+        if selected_jaar != st.session_state["jaar"] or \
+            selected_gemeente != st.session_state["gemeente"]:
+            del st.session_state["tabel"]
+    
+    st.session_state["jaar"] = selected_jaar
+    st.session_state["gemeente"] = selected_gemeente
+    
 with header_container:
     h1, h2, h3 = st.columns([2, 4, 2])
 
@@ -257,7 +303,18 @@ with chart_container:
         overhead_select = st.toggle("Overhead toegedeeld?")
     
         gf_cluster_data = filter_gfdata(get_gfdata(circulaire_dict[selected_circulaire]), selected_gemeente)
-        iv3_cluster_data = iv3_to_cluster(filter_iv3data(get_iv3data(selected_jaar, selected_doc), selected_gemeente), overhead_select)
+        gemeente_iv3data = filter_iv3data(get_iv3data(selected_jaar, selected_doc), selected_gemeente) 
+        
+        if "tabel" in st.session_state:
+            iv3_cluster_data = iv3_to_cluster(filter_iv3data(get_iv3data(
+                selected_jaar, selected_doc), 
+                selected_gemeente), overhead_select, st.session_state["tabel"])
+        else:
+            iv3_cluster_data = iv3_to_cluster(filter_iv3data(get_iv3data(
+                selected_jaar, selected_doc), 
+                selected_gemeente), overhead_select)
+        
+        # Chart
         chart_data, chart_help, cluster_order = combine_into_chart(iv3_cluster_data, gf_cluster_data, selected_gemeente)
         categorie_order = [selected_gemeente, "Gemeentefonds"]
         
@@ -272,20 +329,37 @@ with chart_container:
         
         st.markdown(chart_help)
         
+        # Table
+        table = create_table(iv3_cluster_data, gf_cluster_data, selected_jaar, selected_gemeente)
+        
+        
+        
+        
 
 with iv3_table_container:
-    h1, h2, h3 = st.columns([2, 4, 2])
+    h1, h2, h3 = st.columns([2, 11, 3])
     
     with h2:
+        st.header("Data editor", divider="gray")
         
-        with st.form("data_editor_form"):
-            submit_button = st.form_submit_button("Update de grafiek")
-            gemeente_iv3data = filter_iv3data(get_iv3data(selected_jaar, selected_doc), selected_gemeente)
-            tabel_data = gemeente_iv3data[["Baten", "Lasten", "Saldo"]]
-            
-            st.data_editor(tabel_data, disabled=["Saldo"], use_container_width=True,)
-            
-            if submit_button:
-                pass
+        gemeente_iv3data = filter_iv3data(get_iv3data(selected_jaar, selected_doc), selected_gemeente)
+        tabel_data = gemeente_iv3data[["Baten", "Lasten", "Saldo"]]
+
+        if "tabel" not in st.session_state:
+            st.session_state["tabel"] = tabel_data
+        
+        data_editor = st.data_editor(st.session_state["tabel"], 
+                                     disabled="Saldo", 
+                                     height=2525, # Adjust for different Iv3-indeling
+                                     use_container_width=True
+                                     )
+        
+        if not st.session_state["tabel"].equals(data_editor):
+            st.session_state["tabel"] = data_editor
+            st.session_state["tabel"]['Saldo'] = st.session_state["tabel"]["Lasten"] - \
+                st.session_state["tabel"]["Baten"]
+            st.rerun()
+                   
+        # upload portal
     
 # https://discuss.streamlit.io/t/update-data-in-data-editor-automatically/49839/6
