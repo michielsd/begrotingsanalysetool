@@ -1,0 +1,96 @@
+Codering maatstaf	Naam maatstaf	Sociale basisvoorzieningen	Participatie	Individuele voorzieningen Wmo	Individuele voorzieningen Jeugd	Bestuur en ondersteuning	Orde en veiligheid	Onderwijs	Sport, cultuur en recreatie	Infrastructuur, ruimte en milieu	Overig	Overige eigen middelen	Onroerendezaakbelasting	Totaal
+vest	bedrijven	0,00	0,00	0,00	0,00	0,00	84,44	0,00	0,00	50,34	0,00	0,00	0,00	134,78
+bo31	bewoonde oorden 1930	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	42,27	0,00	0,00	0,00	42,27
+bo31hk	historische woningen in bewoonde oorden 1930	0,00	0,00	0,00	0,00	0,00	0,00	0,00	79,48	0,00	0,00	0,00	0,00	79,48
+bo3_nw	bijstandsontvangers	0,00	5.179,66	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	5.179,66
+doelgroep	doelgroepenregister gemeentelijke doelgroep	0,00	1.047,75	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1.047,75
+ephh	éénpersoonshuishoudens	0,00	0,00	166,19	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	166,19
+groei_jong	extra groei jongeren	0,00	0,00	0,00	0,00	0,00	0,00	766,20	0,00	0,00	0,00	0,00	0,00	766,20
+groei_llvo	extra groei leerlingen voortgezet onderwijs	0,00	0,00	0,00	0,00	0,00	0,00	628,55	0,00	0,00	0,00	0,00	0,00	628,55
+kernen500	grote woonkernen	0,00	0,00	0,00	0,00	0,00	75.166,66	0,00	0,00	0,00	0,00	0,00	0,00	75.166,66
+lidr_w_nw	huishoudens met een laag inkomen met drempel	0,00	355,90	523,50	2.598,90	0,00	128,93	176,88	0,00	0,00	0,00	0,00	0,00	3.784,12
+inwo	inwoners	129,93	0,00	0,00	0,00	205,84	11,53	0,00	146,16	0,00	0,00	-117,89	0,00	375,57
+inw75+dr	inwoners 75+ met drempel	0,00	0,00	1.326,62	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1.326,62
+wad1	inwoners waddengemeenten (<2500 inwoners)	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	269,09	0,00	0,00	269,09
+wad3	inwoners waddengemeenten (>7500 inwoners)	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	47,34	0,00	0,00	47,34
+wad2	inwoners waddengemeenten (2500 tot 7500 inwoners)	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	209,89	0,00	0,00	209,89
+jong	jongeren	0,00	0,00	0,00	305,55	0,00	0,00	260,35	0,00	0,00	0,00	0,00	0,00	565,90
+kernen	kernen	5.562,74	0,00	23.621,29	0,00	0,00	0,00	0,00	0,00	85.333,35	0,00	0,00	0,00	114.517,38
+LOdr	laag opleidingsniveau met drempel	0,00	0,00	263,83	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	263,83
+ll_so	leerlingen (voortgezet) speciaal onderwijs	0,00	0,00	0,00	0,00	0,00	0,00	528,66	0,00	0,00	0,00	0,00	0,00	528,66
+ll_vo	leerlingen voortgezet onderwijs	0,00	0,00	0,00	0,00	0,00	0,00	384,90	0,00	0,00	0,00	0,00	0,00	384,90
+loonksub	loonkostensubsidie	0,00	5.179,66	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	5.179,66
+nwmigr	migratieachtergrond	151,21	0,00	0,00	0,00	0,00	150,18	84,41	0,00	0,00	0,00	0,00	0,00	385,80
+cf.landelijk	landelijke centrumfunctie	0,00	0,00	0,00	0,00	0,00	0,00	0,00	45,41	0,00	0,00	0,00	0,00	45,41
+cf.lokaal	lokale centrumfunctie	0,00	0,00	0,00	0,00	0,00	5,39	0,00	5,47	0,00	0,00	0,00	0,00	10,86
+cf.regionaal	regionale centrumfunctie	29,00	0,00	49,88	45,62	0,00	0,00	0,00	30,60	0,00	0,00	0,00	0,00	155,10
+oeverdhbftot	(oeverlengte+2*veen/kleiveengebied)*bf.gemeente*dh.factor	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	13,42	0,00	0,00	0,00	13,42
+oeverbftot	oeverlengte*bodemfactor gemeente	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	31,40	0,00	0,00	0,00	31,40
+oadw	omgevingsadressendichtheid	17,50	0,00	0,00	-26,22	3,66	18,26	0,00	0,00	73,25	0,00	0,00	0,00	86,45
+goab	onderwijsachterstand	0,00	0,00	0,00	0,00	0,00	0,00	150,84	0,00	0,00	0,00	0,00	0,00	150,84
+opbebnk	 oppervlak bebouwing buitengebied	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	7.925,10	0,00	0,00	0,00	7.925,10
+opbebnkbfnk	oppervlak bebouwing buitengebied ∗ bodemfactor buitengebied	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	2.935,95	0,00	0,00	0,00	2.935,95
+opbebk	oppervlak bebouwing woonkern	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	6.818,51	0,00	0,00	0,00	6.818,51
+opbebkbfk	oppervlak bebouwing woonkern ∗ bodemfactor woonkern	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	10.743,51	0,00	0,00	0,00	10.743,51
+biwa	oppervlak binnenwater	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	126,10	0,00	0,00	0,00	126,10
+buiwamax	oppervlak buitenwater	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	39,89	0,00	0,00	0,00	39,89
+histk40	oppervlak historische kern < 40 ha	0,00	0,00	0,00	0,00	0,00	0,00	0,00	18.619,46	15.125,98	0,00	0,00	0,00	33.745,44
+histk65	oppervlak historische kern > 65 ha	0,00	0,00	0,00	0,00	0,00	0,00	0,00	18.619,46	15.125,98	0,00	0,00	0,00	33.745,44
+histk4164	oppervlak historische kern 40 tot 65 ha	0,00	0,00	0,00	0,00	0,00	0,00	0,00	18.619,46	15.125,98	0,00	0,00	0,00	33.745,44
+landbftot	oppervlak land * bodemfactor gemeente	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	25,72	0,00	0,00	0,00	25,72
+land	oppervlak land	0,00	0,00	0,00	0,00	0,00	0,00	25,26	0,00	13,74	0,00	0,00	0,00	39,00
+WOZnwe70	ozb niet-woningen eigenaren	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	-0,002933	-0,002933
+WOZnwg70	ozb niet-woningen gebruikers	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	-0,002231	-0,002231
+WOZwe80	ozb woningen eigenaren	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	-0,000890	-0,000890
+vast	vast bedrag	0,00	0,00	0,00	0,00	530.897,93	0,00	0,00	0,00	401.336,28	0,00	0,00	49.821,63	982.055,84
+Amsterdam	vast bedrag Amsterdam	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	74.175.269,15	0,00	0,00	74.175.269,15
+Den Haag	verkiezingen Den Haag	0,00	0,00	0,00	0,00	1.494.533,45	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1.494.533,45
+Rotterdam	vast bedrag Rotterdam	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	27.064.336,61	0,00	0,00	27.064.336,61
+woonr	woonruimten	0,00	0,00	0,00	0,00	82,81	56,12	0,00	0,00	-65,05	0,00	0,00	-62,09	11,79
+woonrbfk	woonruimten ∗ bodemfactor woonkern	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	52,99	0,00	0,00	0,00	52,99
+	herindeling	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	1,00
+	suppletie bommenregeling	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	Suppletie nieuwe verdeling GF	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	1,00
+	beschermd wonen	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	participatie	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	aanpak laaggeletterdheid	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	1,00
+	armoedebestrijding kinderen	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	beeldende kunst en vormgeving	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	1,00
+	begeleiding jongeren naar werk	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	behoud sociale voorzieningen Groningen	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	bodembescherming	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	1,00
+	BRP: Centralisering Inschrijving Vergunninghouders	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	dakloze EU burgers	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	einde lening inburgeringsplichtig	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	Ex Ante Impact Analyse NPLV	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	experiment gesloten coffeeshopketen	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	extra capaciteit BOA's	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	faciliteitenbesluit opvangcentra	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	gemeentelijke antidiscriminatie voorzieningen	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	jeugd	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	1,00
+	jeugdhulp aan kinderen in een AZC	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	knelpunten verdeelproblematiek	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	1,00
+	LHBTI-beleid	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	maatschappelijke begeleiding	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	maatschappelijke opvang	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	Nationaal Actieplan Dakloosheid	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	outreachend werken	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	personen met verward gedrag	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	regionale doelgroepen specifieke aanpak	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	Regionale Energie Strategieën	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	1,00
+	slavernijverleden	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	1,00
+	social labs	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	Uitstapprogramma prostituees	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	uitvoeringskosten Lbv en Lbv-plus	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	uitvoeringskosten Omgevingswet	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	veilig wonen	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	veilige steden	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	veiligheidshuizen	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	vergunningverlening, toezicht en handhaving	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	1,00
+	verkeersveiligheid	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	1,00
+	versterking arbeidsmarktregio's	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	versterking omgevingsveiligheidsdiensten	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	voorschoolse voorziening peuters	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	1,00
+	vrouwenopvang	0,00	0,00	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	weerbare gemeenschappen tegen ondermijnende criminaliteit	1,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00
+	Wet kwaliteitsborging bouw	0,00	0,00	0,00	0,00	0,00	0,00	0,00	0,00	1,00	0,00	0,00	0,00	1,00
