@@ -107,7 +107,8 @@ def calculate_clusters(circulaires, uf_csv):
                 if len(gewichten_dict) == len(volumina_dict):
                     for key in gewichten_dict.keys():
                         if key in volumina_dict:
-                            cluster_total += uf * gewichten_dict[key] * volumina_dict[key]
+                            ufactor = 1 if "woz" in key.lower() else uf
+                            cluster_total += ufactor * gewichten_dict[key] * volumina_dict[key]
                 
                 # Match dict keys of gewichten and volumina for SIUDU
                 if len(siudu_gewichten_dict) == len(siudu_dict):

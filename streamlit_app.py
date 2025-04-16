@@ -81,7 +81,7 @@ def filter_gfdata(data, gemeente):
     
     # Convert all numerical values to numeric and divide by 1,000,000
     filtered_data = filtered_data.apply(safe_to_numeric)
-    filtered_data = filtered_data.map(lambda x: x / 1000000 if pd.api.types.is_numeric_dtype(type(x)) else x)
+    filtered_data = filtered_data.map(lambda x: round(x / 1000000, 3) if pd.api.types.is_numeric_dtype(type(x)) else x)
     
     return filtered_data
 
@@ -115,13 +115,13 @@ def get_cluster_dict():
     cluster_to_iv3 = {
         "Sociale basisvoorzieningen" : ("6.1", "6.2", "7.1"),
         "Participatie": ("6.3", "6.4", "6.5"),
-        "Individuele voorzieningen Wmo": ("6.6", "6.71", "6.82"),
+        "Individuele voorzieningen Wmo": ("6.6", "6.71", "6.81"),
         "Individuele voorzieningen Jeugd": ("6.72", "6.73", "6.74", "6.82"),
         "Bestuur en ondersteuning": ("0.1 ", "0.2"), # Spatie achter 0.1
         "Orde en veiligheid": ("1."),
         "Onderwijs": ("4."),
         "Sport, cultuur en recreatie": ("5."),
-        "Infrastructuur, ruimte en milieu": ("0.63", "0.9", "2.", "3.", "7.2", "7.3", "7.4", "8.1", "8.3"),
+        "Infrastructuur, ruimte en milieu": ("0.63", "0.9", "2.", "3.", "7.2", "7.3", "7.4", "7.5", "8.1", "8.3"),
         "Overig": ("Dummy"), # Dummy variable
         "Overige eigen middelen": ("0.11", "0.3", "0.5", "0.64", "0.8", "8.2"),
         "Onroerendezaakbelasting": ("0.61", "0.62"),
@@ -173,14 +173,17 @@ def combine_into_chart(iv3_data, gf_data, gemeente):
     iv3 = iv3_data.copy()
     gf = gf_data.copy()
     
-    iv3.loc["Overige eigen middelen", "Saldo"] *= -1
-    iv3.loc["Onroerendezaakbelasting", "Saldo"] *= -1
-    iv3 = iv3_data.rename(columns={"Saldo": "Waarde"})
+    # First rename the columns
+    iv3 = iv3.rename(columns={"Saldo": "Waarde"})
+    gf = gf.rename(columns={"Gemeentefonds": "Waarde"})
+    
+    # Then make the values positive
+    iv3.loc["Overige eigen middelen", "Waarde"] *= -1
+    iv3.loc["Onroerendezaakbelasting", "Waarde"] *= -1
     iv3["Categorie"] = gemeente
     
-    gf.loc["Overige eigen middelen", "Gemeentefonds"] *= -1
-    gf.loc["Onroerendezaakbelasting", "Gemeentefonds"] *= -1
-    gf = gf_data.rename(columns={"Gemeentefonds": "Waarde"})
+    gf.loc["Overige eigen middelen", "Waarde"] *= -1
+    gf.loc["Onroerendezaakbelasting", "Waarde"] *= -1
     gf["Categorie"] = "Gemeentefonds"
     
     md = pd.concat([iv3, gf])
@@ -231,7 +234,7 @@ def create_table(iv3_data, gf_data, jaar, gemeente):
     inkomsten['Verschil'] = inkomsten['Netto lasten'] + inkomsten['Gemeentefonds']
     
     inwoners = get_class_data(jaar, gemeente)['Inwonertal']
-    inkomsten['Verschil per inwoner'] = 1000 * inkomsten['Verschil'] / inwoners 
+    inkomsten['Verschil per inwoner'] = round(1000 * inkomsten['Verschil'] / inwoners , 2)
     
     st.write(inkomsten)
     
@@ -269,6 +272,25 @@ with st.sidebar:
     selected_doc = st.selectbox("Begroting- of jaarrekeningdata?",
                             documenten,
                             key=2)
+    
+    vergelijken_select = st.toggle("Vergelijken?")
+    
+    if vergelijken_select:
+        st.write("Vergelijken met:")
+        selected_grootteklasse = st.checkbox("Provincie")
+        selected_provincie = st.checkbox("Grootteklasse")
+        selected_stedelijkheid = st.checkbox("Stedelijkheid")
+        
+        # Wat zijn de provincies en stedelijkheidsklasse?
+        
+        vg_toelichting = "Er wordt vergeleken met: alle gemeenten"
+        vg_toevoeging = " in Nederland" if not selected_provincie else
+        
+        if not selected_provincie:
+            vg_toevoeging = " in Nederland"
+            
+            elif selected_gr
+        
     
     if "jaar" in st.session_state and "gemeente" in st.session_state and "tabel" in st.session_state:
         if selected_jaar != st.session_state["jaar"] or \
@@ -328,6 +350,8 @@ with chart_container:
         st.altair_chart(chart, use_container_width=True)
         
         st.markdown(chart_help)
+        
+        st.write(gemeente_iv3data)
         
         # Table
         table = create_table(iv3_cluster_data, gf_cluster_data, selected_jaar, selected_gemeente)
