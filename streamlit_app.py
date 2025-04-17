@@ -4,9 +4,10 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 import matplotlib
+import vl_convert as vlc
 
 # Globals
-JAAR_MINIMUM = 2024
+JAAR_MINIMUM = 2017
 JAAR_MAXIMUM = 2024
 LAATSTE_JR = 2023
 LAATSTE_CRE = "S2024"
@@ -51,8 +52,9 @@ def filter_iv3data(data, gemeente):
 def get_class_data(jaar, gemeente):
     filepath = f"https://raw.githubusercontent.com/michielsd/begrotingsanalysetool/refs/heads/main/Brondata/Gemeenteklassen/{jaar}.csv"
     
-    gemeente = gemeente.replace(" (gemeente)", "")
-    
+    if gemeente in ["'s-Gravenhage", "Groningen", "Utrecht"]:
+        gemeente = gemeente + " (gemeente)"
+        
     data = pd.read_csv(filepath, sep="\t")
     data = data.set_index("Gemeenten")    
     data = data.loc[gemeente]
@@ -221,22 +223,47 @@ def create_table(iv3_data, gf_data, jaar, gemeente):
     
     i = i.rename(columns={"Saldo": "Netto lasten"})
     
+    
     g.loc["Gemeentefonds"] = gf_data.sum()
     g.loc["Onroerendezaakbelasting", "Gemeentefonds"] *= -1
     g.loc["Overige eigen middelen", "Gemeentefonds"] *= -1
     
     md = pd.merge(i, g, on='Taakveld', how='outer')
+    md = md.rename_axis("Cluster")
     
-    inkomsten = md.loc[['Onroerendezaakbelasting', 'Overige eigen middelen', 'Mutatie reserves', 'Gemeentefonds']]
-    inkomsten['Netto lasten'] *= -1000
-    inkomsten['Gemeentefonds'] *= -1000
+    md['Netto lasten'] *= 1000
+    md['Gemeentefonds'] *= 1000
     
-    inkomsten['Verschil'] = inkomsten['Netto lasten'] + inkomsten['Gemeentefonds']
-    
+    md.loc["Overige eigen middelen", "Gemeentefonds"] *= -1
+    md.loc["Onroerendezaakbelasting", "Gemeentefonds"] *= -1
+    md.loc["Gemeentefonds", "Gemeentefonds"] *= -1
+    md['Verschil'] = md['Netto lasten'] - md['Gemeentefonds']
+        
     inwoners = get_class_data(jaar, gemeente)['Inwonertal']
-    inkomsten['Verschil per inwoner'] = round(1000 * inkomsten['Verschil'] / inwoners , 2)
+    md['Verschil per inwoner'] = round(1000 * md['Verschil'] / inwoners, 2)
     
-    st.write(inkomsten)
+    md.fillna(0, inplace=True)
+    
+    # Create inkomsten table
+    inkomsten = md.loc[['Onroerendezaakbelasting', 'Overige eigen middelen', 'Mutatie reserves', 'Gemeentefonds']]
+    inkomsten.loc["Totaal inkomstenclusters"] = inkomsten.sum()
+    for col in inkomsten.columns:
+        if col != "Verschil per inwoner":
+            inkomsten[col] = inkomsten[col].map(lambda x: int(x))
+    
+    uitgaven = md.loc[['Bestuur en ondersteuning', 'Sociale basisvoorzieningen', 'Participatie', \
+        'Individuele voorzieningen Wmo', 'Individuele voorzieningen Jeugd', 'Orde en veiligheid', \
+            'Onderwijs', 'Sport, cultuur en recreatie', 'Infrastructuur, ruimte en milieu', \
+                'Overhead', 'Overig']]
+    uitgaven.loc["Totaal uitgavenclusters"] = uitgaven.sum()
+    for col in uitgaven.columns:
+        if col != "Verschil per inwoner":
+            uitgaven[col] = uitgaven[col].map(lambda x: int(x))
+    
+    
+    returndict = {"**Inkomstenclusters**": inkomsten, "**Uitgavenclusters**": uitgaven}
+    
+    return returndict
     
     
     
@@ -272,24 +299,6 @@ with st.sidebar:
     selected_doc = st.selectbox("Begroting- of jaarrekeningdata?",
                             documenten,
                             key=2)
-    
-    vergelijken_select = st.toggle("Vergelijken?")
-    
-    if vergelijken_select:
-        st.write("Vergelijken met:")
-        selected_grootteklasse = st.checkbox("Provincie")
-        selected_provincie = st.checkbox("Grootteklasse")
-        selected_stedelijkheid = st.checkbox("Stedelijkheid")
-        
-        # Wat zijn de provincies en stedelijkheidsklasse?
-        
-        vg_toelichting = "Er wordt vergeleken met: alle gemeenten"
-        vg_toevoeging = " in Nederland" if not selected_provincie else
-        
-        if not selected_provincie:
-            vg_toevoeging = " in Nederland"
-            
-            elif selected_gr
         
     
     if "jaar" in st.session_state and "gemeente" in st.session_state and "tabel" in st.session_state:
@@ -345,45 +354,61 @@ with chart_container:
             y=alt.Y('Waarde:Q', title='€ 1 mln.'),
             color=alt.Color('Categorie:N', sort=categorie_order),
             xOffset=alt.XOffset('Categorie:N', sort=categorie_order)
+        ).properties(
+            usermeta={
+                "embedOptions": {
+                    "formatLocale": vlc.get_format_locale("nl-NL"),
+                        }
+                }
         )
         
         st.altair_chart(chart, use_container_width=True)
         
         st.markdown(chart_help)
         
-        st.write(gemeente_iv3data)
-        
         # Table
-        table = create_table(iv3_cluster_data, gf_cluster_data, selected_jaar, selected_gemeente)
+        tables = create_table(iv3_cluster_data, gf_cluster_data, selected_jaar, selected_gemeente)
+        
+        for table_header, table in tables.items():
+            st.markdown(table_header)
+            st.markdown("In € 1.000; Verschil per inwoner is in € 1")
+            
+            formatted_table = table.style.format(
+                thousands='.',
+                decimal=',',
+                precision=2
+            )
+            
+            st.dataframe(formatted_table, width=700, height=(len(table)+1)*36)
         
         
         
         
 
-with iv3_table_container:
-    h1, h2, h3 = st.columns([2, 11, 3])
-    
-    with h2:
-        st.header("Data editor", divider="gray")
-        
-        gemeente_iv3data = filter_iv3data(get_iv3data(selected_jaar, selected_doc), selected_gemeente)
-        tabel_data = gemeente_iv3data[["Baten", "Lasten", "Saldo"]]
-
-        if "tabel" not in st.session_state:
-            st.session_state["tabel"] = tabel_data
-        
-        data_editor = st.data_editor(st.session_state["tabel"], 
-                                     disabled="Saldo", 
-                                     height=2525, # Adjust for different Iv3-indeling
-                                     use_container_width=True
-                                     )
-        
-        if not st.session_state["tabel"].equals(data_editor):
-            st.session_state["tabel"] = data_editor
-            st.session_state["tabel"]['Saldo'] = st.session_state["tabel"]["Lasten"] - \
-                st.session_state["tabel"]["Baten"]
-            st.rerun()
-                   
-        # upload portal
+#with iv3_table_container:
+#    h1, h2, h3 = st.columns([2, 11, 3])
+#    
+#    with h2:
+#        st.header("Data editor", divider="gray")
+#        
+#        gemeente_iv3data = filter_iv3data(get_iv3data(selected_jaar, selected_doc), selected_gemeente)
+#        tabel_data = gemeente_iv3data[["Baten", "Lasten", "Saldo"]]
+#
+#        if "tabel" not in st.session_state:
+#            st.session_state["tabel"] = tabel_data
+#        
+#        data_editor = st.data_editor(st.session_state["tabel"], 
+#                                     disabled="Saldo", 
+#                                     height=2525, # Adjust for different Iv3-indeling
+#                                     use_container_width=True
+#                                     )
+#       
+#        if not st.session_state["tabel"].equals(data_editor):
+#            st.session_state["tabel"] = data_editor
+#            st.session_state["tabel"]['Saldo'] = st.session_state["tabel"]["Lasten"] - \
+#                st.session_state["tabel"]["Baten"]
+#            st.rerun()
+#                   
+#        # upload portal
     
 # https://discuss.streamlit.io/t/update-data-in-data-editor-automatically/49839/6
