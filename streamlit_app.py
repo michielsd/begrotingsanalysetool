@@ -7,8 +7,8 @@ import matplotlib
 import vl_convert as vlc
 
 # Globals
-JAAR_MINIMUM = 2017
-JAAR_MAXIMUM = 2024
+JAAR_MINIMUM = 2023
+JAAR_MAXIMUM = 2025
 LAATSTE_JR = 2023
 LAATSTE_CRE = "S2024"
 
@@ -103,8 +103,8 @@ def get_circulaires(jaar):
         circulaire_dict[f"September {vorig_jaar}"] = f"S{vorig_jaar}_{jaar}"
     elif int(jaar) == laatste_jaar and laatste_maand == "September":
         circulaire_dict[f"September {jaar}"] = f"S{jaar}_{jaar}"
-        #circulaire_dict[f"Mei {jaar}"] = f"M{laatste_jaar}_{jaar}"
-        #circulaire_dict[f"September {vorig_jaar}"] = f"S{vorig_jaar}_{jaar}"
+        circulaire_dict[f"Mei {jaar}"] = f"M{laatste_jaar}_{jaar}"
+        circulaire_dict[f"September {vorig_jaar}"] = f"S{vorig_jaar}_{jaar}"
     
     circulaire_list = circulaire_dict.keys()
     
