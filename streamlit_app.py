@@ -90,21 +90,30 @@ def filter_gfdata(data, gemeente):
 def get_circulaires(jaar):
     circulaire_dict = {}
     
-    laatste_jaar = int(LAATSTE_CRE[1:])
-    vorig_jaar = int(jaar) - 1
+    laatste_c_jaar = LAATSTE_CRE[1:]
     laatste_maand = "Mei" if LAATSTE_CRE[0] == "M" else "September"
+    vorig_jaar = str(int(jaar)-1)
     
-    # If no circulaires for jaar: september circulaire last year
-    if int(jaar) > laatste_jaar:
-        circulaire_dict[f"September {laatste_jaar}"] = f"S{laatste_jaar}_{jaar}"
-    # If circulaire in jaar and laatste circulaire is Mei
-    elif int(jaar) == laatste_jaar and laatste_maand == "Mei":
-        circulaire_dict[f"Mei {jaar}"] = f"M{laatste_jaar}_{jaar}"
+    # If last circulaire from last year from May
+    if int(laatste_c_jaar) < int(jaar) and laatste_maand == "Mei":
+        circulaire_dict[f"Mei {laatste_c_jaar}"] = f"M{laatste_c_jaar}_{jaar}"
+    # If last circulaire from last year from September
+    elif int(laatste_c_jaar) < int(jaar) and laatste_maand == "September":
+        circulaire_dict[f"Mei {laatste_c_jaar}"] = f"M{laatste_c_jaar}_{jaar}"
+        circulaire_dict[f"September {laatste_c_jaar}"] = f"S{laatste_c_jaar}_{jaar}"
+    # If last circulaire from this year from May
+    elif int(laatste_c_jaar) >= int(jaar) and laatste_maand == "Mei": 
+        circulaire_dict[f"Mei {vorig_jaar}"] = f"M{vorig_jaar}_{jaar}"
         circulaire_dict[f"September {vorig_jaar}"] = f"S{vorig_jaar}_{jaar}"
-    elif int(jaar) == laatste_jaar and laatste_maand == "September":
+        circulaire_dict[f"Mei {laatste_c_jaar}"] = f"M{laatste_c_jaar}_{jaar}"
+    # If last circulaire from this year from September
+    elif int(laatste_c_jaar) >= int(jaar) and laatste_maand == "September": 
+        circulaire_dict[f"Mei {vorig_jaar}"] = f"M{vorig_jaar}_{jaar}"
+        circulaire_dict[f"September {vorig_jaar}"] = f"S{vorig_jaar}_{jaar}"
+        circulaire_dict[f"Mei {jaar}"] = f"M{jaar}_{jaar}"
         circulaire_dict[f"September {jaar}"] = f"S{jaar}_{jaar}"
-        circulaire_dict[f"Mei {jaar}"] = f"M{laatste_jaar}_{jaar}"
-        circulaire_dict[f"September {vorig_jaar}"] = f"S{vorig_jaar}_{jaar}"
+    
+    st.write(circulaire_dict)
     
     circulaire_list = circulaire_dict.keys()
     
