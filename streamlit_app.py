@@ -73,6 +73,7 @@ def filter_gfdata(data, gemeente):
     
     # Filter out gemeente
     filtered_data = data[data['Gemeenten'] == gemeente].T
+    st.write(filtered_data)
     filtered_data = filtered_data.reset_index()
     filtered_data = filtered_data.rename(columns={"index": "Taakveld"})
     filtered_data = filtered_data.set_index("Taakveld")

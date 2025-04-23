@@ -124,9 +124,13 @@ def calculate_clusters(circulaires, uf_csv):
         df = df.reset_index()
         df = df.rename(columns={"index": "Gemeenten"})
         
-        # Added total general
-        total_row = df.sum().reset_index()
-        total_row['Gemeenten'] = 'Nederland'
+        # Calculate total row correctly by summing each column
+        total_row = pd.DataFrame({
+            'Gemeenten': ['Nederland'],
+            **{col: [df[col].sum()] for col in df.columns if col != 'Gemeenten'}
+        })
+        
+        # Concatenate the total row to the dataframe
         df = pd.concat([df, total_row], ignore_index=True)
 
         cluster_data_dict[circulaire] = df
