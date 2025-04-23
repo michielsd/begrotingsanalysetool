@@ -113,8 +113,6 @@ def get_circulaires(jaar):
         circulaire_dict[f"Mei {jaar}"] = f"M{jaar}_{jaar}"
         circulaire_dict[f"September {jaar}"] = f"S{jaar}_{jaar}"
     
-    st.write(circulaire_dict)
-    
     circulaire_list = circulaire_dict.keys()
     
     return circulaire_list, circulaire_dict

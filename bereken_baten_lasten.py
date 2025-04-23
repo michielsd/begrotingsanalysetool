@@ -7,6 +7,7 @@ import pandas as pd
 # Globals
 IV3_MAP = "Brondata/Iv3/"
 CLASSES = "Brondata/Gemeenteklassen/"
+SOC_CTR = "Brondata/sociale_structuur_centrumfunctie.csv"
 NAMES = "Brondata/gemeentenamen.csv"
 ANALYSEMAP = "Analysedata/Iv3/"
 
@@ -26,7 +27,9 @@ def main():
         
         totals = get_taakveld_totals(df)
         totals_w_classes = add_class_data(totals, jaar)
-        output_df = replace_gemeente_names(totals_w_classes)
+        totals_right_names = replace_gemeente_names(totals_w_classes)
+        
+        output_df = add_total_general(totals_right_names)
         
         output_df.to_csv(str(ANALYSEMAP) + output_name, sep=";", index=False) # ; For Nuenen Gerwen
         print(output_name)
@@ -58,7 +61,10 @@ def get_taakveld_totals(df):
 def add_class_data(df, jaar):
     
     class_data = pd.read_csv(CLASSES + jaar + ".csv", sep="\t")
-    output_df = pd.merge(df, class_data, on="Gemeenten")
+    soc_data = pd.read_csv(SOC_CTR, sep="\t")
+    
+    class_df = pd.merge(df, class_data, on="Gemeenten")
+    output_df = pd.merge(class_df, soc_data, on="Gemeenten")
     
     return output_df
 
@@ -74,6 +80,24 @@ def replace_gemeente_names(df):
     output_df = df.replace(gemeentenamen)
     
     return output_df
+
+def add_total_general(df):
     
+    # Calculate total for each unique Taakveld
+    total_df = df.groupby("Taakveld").agg({
+        "L1.1 Salarissen en sociale lasten": "sum",
+        "Baten": "sum",
+        "Lasten": "sum",
+        "Inwonertal": "sum"
+    }).reset_index()
+    
+    # Set the 'Gemeenten' column to 'Nederland' for the total rows
+    total_df['Gemeenten'] = 'Nederland'
+    
+    # Add the total row to the original dataframe
+    df = pd.concat([df, total_df], ignore_index=True)
+    
+    return df
+
 if __name__ == "__main__":
     main()
