@@ -52,14 +52,18 @@ def filter_iv3data(data, gemeente):
 def get_class_data(jaar, gemeente):
     filepath = f"https://raw.githubusercontent.com/michielsd/begrotingsanalysetool/refs/heads/main/Brondata/Gemeenteklassen/{jaar}.csv"
     
+    data = pd.read_csv(filepath, sep="\t")
+    data = data.set_index("Gemeenten")
+    
     if gemeente in ["'s-Gravenhage", "Groningen", "Utrecht"]:
         gemeente = gemeente + " (gemeente)"
-        
-    data = pd.read_csv(filepath, sep="\t")
-    data = data.set_index("Gemeenten")    
-    data = data.loc[gemeente]
     
-    return data
+    if gemeente != "Nederland":
+        data = data.loc[gemeente]
+        return data
+    else:
+        return data
+
 
 @st.cache_resource
 def get_gfdata(gf_path):
@@ -73,7 +77,6 @@ def filter_gfdata(data, gemeente):
     
     # Filter out gemeente
     filtered_data = data[data['Gemeenten'] == gemeente].T
-    st.write(filtered_data)
     filtered_data = filtered_data.reset_index()
     filtered_data = filtered_data.rename(columns={"index": "Taakveld"})
     filtered_data = filtered_data.set_index("Taakveld")
@@ -247,7 +250,7 @@ def create_table(iv3_data, gf_data, jaar, gemeente):
     md.loc["Gemeentefonds", "Gemeentefonds"] *= -1
     md['Verschil'] = md['Netto lasten'] - md['Gemeentefonds']
         
-    inwoners = get_class_data(jaar, gemeente)['Inwonertal']
+    inwoners = get_class_data(jaar, gemeente)['Inwonertal'].sum()
     md['Verschil per inwoner'] = round(1000 * md['Verschil'] / inwoners, 2)
     
     md.fillna(0, inplace=True)
@@ -339,7 +342,21 @@ with chart_container:
                                  circulaires,
                                  index=0,
                                  key=3)
-        overhead_select = st.toggle("Overhead toegedeeld?")
+        b1, b2, b3 = st.columns([1,1,1])
+        with b1:
+            overhead_select = st.toggle("Overhead toegedeeld?")
+        with b3:
+            vergelijken_select = st.toggle("Vergelijken?")
+            if vergelijken_select:
+                v_box = st.popover("")
+                
+                vergelijken_1 = v_box.selectbox("Selecteer een gemeente",
+                                 sidebar_gemeenten,
+                                 key=20)
+                
+                
+                
+                        
     
         gf_cluster_data = filter_gfdata(get_gfdata(circulaire_dict[selected_circulaire]), selected_gemeente)
         gemeente_iv3data = filter_iv3data(get_iv3data(selected_jaar, selected_doc), selected_gemeente) 
