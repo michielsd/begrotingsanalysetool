@@ -34,19 +34,40 @@ def get_iv3data(jaar, doc):
 def filter_iv3data(data, gemeente):
     
     # Filter out gemeente
-    filtered_data = data[data['Gemeenten'] == gemeente]
+    filtered_data = data[data['Gemeenten'].str.startswith(gemeente)]
     
     # Calculate saldo
     filtered_data = filtered_data.assign(Saldo=filtered_data['Lasten'] - filtered_data['Baten'])
         
     # Drop superfluous columns
-    filtered_data = filtered_data.drop(columns=["Gemeenten", "Provincie", "Gemeentegrootte", "Stedelijkheid", "Inwonertal"])
+    filtered_data = filtered_data.drop(columns=["Gemeenten", "Provincie", "Gemeentegrootte", \
+        "Stedelijkheid", "Inwonertal", "Sociale structuur", "Centrumfunctie"])
     filtered_data = filtered_data.set_index("Taakveld")
     
     filtered_data = filtered_data.apply(safe_to_numeric)
     filtered_data = filtered_data.map(lambda x: x / 1000 if pd.api.types.is_numeric_dtype(type(x)) else x)
     
     return filtered_data
+
+def get_gemeente_chars(data, gemeente):
+    # Filter out gemeente
+    filtered_data = data[data['Gemeenten'] == gemeente]
+    
+    soc_str = filtered_data[['Sociale structuur']].values[0]
+    centr = filtered_data[['Centrumfunctie']].values[0]
+    inwoners = filtered_data[['Inwonertal']].values[0]
+    
+    return_df = pd.DataFrame({
+        "Gemeente": [gemeente],
+        "Sociale structuur": soc_str,
+        "Centrumfunctie": centr,
+        "Inwoners": inwoners
+    })
+    
+    return_df = return_df.set_index("Gemeente")
+    
+    return return_df    
+    
 
 @st.cache_resource
 def get_class_data(jaar, gemeente):
@@ -76,7 +97,7 @@ def get_gfdata(gf_path):
 def filter_gfdata(data, gemeente):
     
     # Filter out gemeente
-    filtered_data = data[data['Gemeenten'] == gemeente].T
+    filtered_data = data[data['Gemeenten'].str.startswith(gemeente)].T
     filtered_data = filtered_data.reset_index()
     filtered_data = filtered_data.rename(columns={"index": "Taakveld"})
     filtered_data = filtered_data.set_index("Taakveld")
@@ -129,7 +150,7 @@ def get_cluster_dict():
         "Sociale basisvoorzieningen" : ("6.1", "6.2", "7.1"),
         "Participatie": ("6.3", "6.4", "6.5"),
         "Individuele voorzieningen Wmo": ("6.6", "6.71", "6.81"),
-        "Individuele voorzieningen Jeugd": ("6.72", "6.73", "6.74", "6.82"),
+        "Individuele voorzieningen Jeugd": ("6.72", "6.73", "6.74", "6.75", "6.76", "6.792", "6.82", "6.92"),
         "Bestuur en ondersteuning": ("0.1 ", "0.2"), # Spatie achter 0.1
         "Orde en veiligheid": ("1."),
         "Onderwijs": ("4."),
@@ -298,7 +319,7 @@ with st.sidebar:
     sidebar_jaren = [str(i) for i in range(JAAR_MINIMUM, JAAR_MAXIMUM+1)]
     selected_jaar = st.selectbox("Selecteer het begrotingsjaar",
                                  sidebar_jaren,
-                                 index=0,
+                                 index=len(sidebar_jaren)-1,
                                  key=0)
     
     sidebar_gemeenten = get_iv3data(selected_jaar, "begroting").Gemeenten.unique()
@@ -340,24 +361,41 @@ with chart_container:
         circulaires, circulaire_dict = get_circulaires(selected_jaar)
         selected_circulaire = st.selectbox("Selecteer de circulaire",
                                  circulaires,
-                                 index=0,
+                                 index=len(circulaires) -1,
                                  key=3)
+        
+        gemeente_info = get_gemeente_chars(get_iv3data(selected_jaar, selected_doc), selected_gemeente) 
+        
         b1, b2, b3 = st.columns([1,1,1])
         with b1:
             overhead_select = st.toggle("Overhead toegedeeld?")
         with b3:
-            vergelijken_select = st.toggle("Vergelijken?")
-            if vergelijken_select:
-                v_box = st.popover("")
+            v_box = st.popover("Selecteer gemeenten om mee te vergelijken")
+                                                                     
+            socstr_select = v_box.toggle("Alleen gemeenten met dezelfde sociale structuur")
+            centr_select = v_box.toggle("Alleen gemeenten met dezelfde centrumfunctie")
+            
+            vgl_df = get_iv3data(selected_jaar, selected_doc)     
+            if socstr_select:
+                vgl_df = vgl_df[vgl_df['Sociale structuur'] == gemeente_info['Sociale structuur'].values[0]]
+            if centr_select:
+                vgl_df = vgl_df[vgl_df['Centrumfunctie'] == gemeente_info['Centrumfunctie'].values[0]]
+            vgl_opties = vgl_df.Gemeenten.unique()                        
                 
-                vergelijken_1 = v_box.selectbox("Selecteer een gemeente",
-                                 sidebar_gemeenten,
+            vergelijken_1 = v_box.selectbox("Selecteer een gemeente",
+                                 vgl_opties,
+                                 index=None,
                                  key=20)
-                
-                
-                
-                        
-    
+            vergelijken_2 = v_box.selectbox("Selecteer een gemeente",
+                                 vgl_opties,
+                                 index=None,
+                                 key=21)
+            vergelijken_3 = v_box.selectbox("Selecteer een gemeente",
+                                 vgl_opties,
+                                 index=None,
+                                 key=22)
+            vgl_gemeenten = tuple(i for i in [vergelijken_1, vergelijken_2, vergelijken_3] if i)
+
         gf_cluster_data = filter_gfdata(get_gfdata(circulaire_dict[selected_circulaire]), selected_gemeente)
         gemeente_iv3data = filter_iv3data(get_iv3data(selected_jaar, selected_doc), selected_gemeente) 
         
@@ -389,6 +427,34 @@ with chart_container:
         
         st.altair_chart(chart, use_container_width=True)
         
+        if len(vgl_gemeenten) > 0:
+            vgl_cluster_data = filter_gfdata(get_gfdata(circulaire_dict[selected_circulaire]), vgl_gemeenten)
+            vgl_iv3data = iv3_to_cluster(filter_iv3data(get_iv3data(
+                selected_jaar, selected_doc), 
+                selected_gemeente), overhead_select
+            ) 
+            
+            if len(vgl_gemeenten) == 1:
+                vgl_text = vgl_gemeenten[0]
+            
+            chart_data, chart_help, cluster_order = combine_into_chart(vgl_iv3data, vgl_cluster_data, vgl_text)
+            categorie_order = [vgl_text, "Gemeentefonds"]
+            
+            chart2 = alt.Chart(chart_data).mark_bar().encode(
+                x=alt.X('Taakveld:N', title='Cluster', sort=cluster_order),
+                y=alt.Y('Waarde:Q', title='€ 1 mln.'),
+                color=alt.Color('Categorie:N', sort=categorie_order),
+                xOffset=alt.XOffset('Categorie:N', sort=categorie_order)
+            ).properties(
+                usermeta={
+                    "embedOptions": {
+                        "formatLocale": vlc.get_format_locale("nl-NL"),
+                            }
+                    }
+            )
+            
+            st.altair_chart(chart2, use_container_width=True)
+            
         st.markdown(chart_help)
         
         # Table
